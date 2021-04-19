@@ -1,0 +1,56 @@
+﻿#pragma kernel Update
+
+struct Agent {
+    float2 position;
+    float angle;
+};
+
+uint hash(uint state){
+    state ^= 2747636419u;
+    state *= 2654435769u;
+    state ^= state >> 16;
+    state *= 2654435769u;
+    state ^= state >> 16;
+    state *= 2654435769u;
+    return state;
+}
+
+RWStructuredBuffer<Agent> agents;
+RWTexture2D<float4> Map;
+uint width;
+uint height;
+uint numAgents;
+float moveSpeed;
+uniform float Time;
+uniform float deltaTime;
+
+[numthreads(1,1,1)]
+void Update (uint3 id : SV_DispatchThreadID)
+{
+    //if(id.x >= numAgents){return;}
+
+    
+        Agent agent = agents[id.x];
+        for(int i = 0; i < 10; i++){
+
+        
+        uint random = hash(agent.position.y * width + agent.position.x + hash(id.x));
+
+       float2 direction = float2(cos(agent.angle), sin(agent.angle));
+       float2 newPos = agents[id.x].position;
+
+       // if(newPos.x < 0 || newPos.x >= width || newPos.y < 0 || newPos.y >= height){
+       //    newPos.x = min(width-0.01, max(0, newPos.x));
+       //     newPos.y = min(width-0.01, max(0, newPos.y));
+          
+       //     agents[id.x].angle = hash(random) * 2 * 3.141592;
+
+       // }
+       //agents[id.x].angle = hash(random) * 10 * 3.141592;
+    
+    Map[int2(newPos.x * Time, newPos.y * Time)] = 1;
+}
+}
+
+
+
